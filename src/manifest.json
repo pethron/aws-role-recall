@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "AWS Switch Role Tracker",
+    "name": "AWS Role Recall",
     "version": "1.0",
     "description": "Extension to recall switch-roles on AWS.",
     "permissions": ["storage", "activeTab", "webRequest", "webRequestBlocking"],

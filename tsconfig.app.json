@@ -8,8 +8,7 @@
     "forceConsistentCasingInFileNames": true,              
   },
   "files": [
-    "src/main.ts",
-    "src/assets/scripts/background.ts"
+    "src/main.ts"
   ],
   "include": [
     "src/**/*.d.ts",
