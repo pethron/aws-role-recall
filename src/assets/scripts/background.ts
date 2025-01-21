@@ -1,6 +1,5 @@
 chrome.webRequest.onBeforeRequest.addListener(
     (details) => {
-        // Intercetta solo richieste POST verso l'URL target
         if (details.method === "POST" && details.url.includes("https://signin.aws.amazon.com/saml")) {
             if (details.requestBody) {
                 try {

@@ -7,9 +7,12 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "build:watch": "ng build --output-hashing=none --watch",
-    "watch:files": "chokidar 'src/manifest.json' 'src/assets/scripts/*' -c 'cp -r src/manifest.json dist/role-ext && cp -r src/assets/scripts/* dist/role-ext/assets/scripts/'",
-    "start:dev": "npm-run-all --parallel build:watch watch:files"
+    "build:extension": "tsc --project tsconfig.app.json --outDir out-tsc",
+    "build:angular": "ng build --output-hashing=none",
+    "build:all": "npm run build:extension && npm run build:angular",
+    "watch:extension": "tsc --project tsconfig.app.json --outDir out-tsc --watch",
+    "watch:angular": "ng build --watch --output-hashing=none",
+    "watch:all": "npm-run-all --parallel watch:extension watch:angular"
   },
   "private": true,
   "dependencies": {
