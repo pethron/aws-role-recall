@@ -1,21 +1,12 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component';
-
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
-  console.log("Hello from main.ts");
-/* 
-
 // Function to update roles in the popup
-function updateRoles(samlResponse: any) {
+function updateRoles(samlResponse) {
   const roles = parseSAMLResponse(samlResponse);
   const roleListContainer = document.getElementById("roleListContainer");
 
   roleListContainer.innerHTML = "";
 
   // Generate a styled div for each role
-  roles.forEach((value: any) => {
+  roles.forEach((value) => {
     const { roleArn, providerArn } = value;
     const accountId = roleArn.split(":")[4]; // Extract account ID
     const roleName = roleArn.split("/")[1]; // Extract role name
@@ -105,4 +96,4 @@ function generateSwitchRoleLinks(roles) {
 
     return { accountId, roleName, displayName, url: switchRoleUrl };
   });
-} */
+}

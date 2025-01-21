@@ -28,13 +28,24 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "src/assets",
+                "output": "assets",
+                "ignore": ["**/*.ts"]
+              },
+              {
+                "glob": "**/*",
+                "input": "src/public",
+                "output": ""
+              },
+              {
+                "glob": "manifest.json",
+                "input": "src",
+                "output": ""
               }
             ],
             "styles": [
               "src/styles.scss"
-            ],
-            "scripts": []
+            ]
           },
           "configurations": {
             "production": {

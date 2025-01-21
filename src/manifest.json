@@ -1,0 +1,39 @@
+{
+    "manifest_version": 3,
+    "name": "AWS Switch Role Tracker",
+    "version": "1.0",
+    "description": "Extension to recall switch-roles on AWS.",
+    "permissions": ["storage", "activeTab", "webRequest", "webRequestBlocking"],
+    "host_permissions": [
+      "https://*.signin.aws.amazon.com/switchrole*",
+       "https://signin.aws.amazon.com/saml",
+       "https://signin.amazonaws-us-gov.com/saml"
+    ],
+    "background": {
+      "service_worker": "assets/scripts/background.js"
+    },
+    "action": {
+      "default_popup": "index.html",
+      "default_icon": "assets/images/icon48.png"
+    },
+    "icons": {
+      "48": "assets/images/icon48.png",
+      "128": "assets/images/icon128.png"
+    },
+    "content_scripts": [
+      {
+        "matches": [
+          "https://*.signin.aws.amazon.com/*"
+        ],
+        "js": ["assets/scripts/content.js"]
+      },
+      {
+        "matches": [
+          "https://signin.aws.amazon.com/saml",
+          "https://signin.amazonaws-us-gov.com/saml"
+        ],
+        "js": ["assets/scripts/saml.js"]
+      }
+    ]
+}
+  
