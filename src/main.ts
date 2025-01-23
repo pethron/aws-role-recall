@@ -4,7 +4,7 @@ import { AppComponent } from './app/app.component';
 
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));
-  console.log("Hello from main.ts");
+  console.log("Hello from main.ts"); // Log a message to the console
 /* 
 
 // Function to update roles in the popup

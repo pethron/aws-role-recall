@@ -33,9 +33,9 @@
                 "ignore": ["**/*.ts"]
               },
               {
-                "glob": "**/*",
-                "input": "out-tsc/assets/scripts",
-                "output": "assets/scripts"
+                "glob": "background.js",
+                "input": "out-tsc",
+                "output": ""
               },
               {
                 "glob": "manifest.json",
