@@ -6,7 +6,7 @@ chrome.webRequest.onBeforeRequest.addListener(
                     if (details.requestBody.formData && details.requestBody.formData["SAMLResponse"]) {
                         const samlResponseBase64 = details.requestBody.formData["SAMLResponse"][0];
                         const samlResponseDecoded = atob(samlResponseBase64);
-                        console.log("asdf");
+                        parseXML(samlResponseDecoded);
                         chrome.storage.local.set({ samlResponse: samlResponseDecoded });
                     }
                     else if (details.requestBody.raw) {

@@ -14,7 +14,6 @@
     "build:background": "node esbuild.config.mjs",
     "build:angular": "ng build --output-hashing=none",
     "build:all": "npm run build:background && npm run build:angular",
-
     "build:t:background": "tsc --project tsconfig.background.json --outDir out-tsc",
     "watch:t:background": "tsc --project tsconfig.background.json --outDir out-tsc",
     "watch:extension": "tsc --project tsconfig.app.json --outDir out-tsc --watch"
@@ -29,6 +28,7 @@
     "@angular/platform-browser": "^19.1.0",
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
+    "htmlparser2": "^10.0.0",
     "jsdom": "^26.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
