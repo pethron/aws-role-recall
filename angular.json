@@ -30,7 +30,7 @@
                   "glob": "background.js",
                   "input": "out-tsc/background",
                   "output": ""
-                },
+                }
             ],
             "styles": [
               "src/styles.scss"

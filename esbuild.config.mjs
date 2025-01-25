@@ -6,7 +6,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 build({
   entryPoints: ['src/background/background.ts'], // Background entry point
   bundle: true,                                  // Bundle dependencies
-  outfile: 'dist/browser/background.js',         // Output file
+  outfile: 'dist/background.js',         // Output file
   platform: 'browser',                           // Target browser runtime
   target: 'es2022',                              // Use modern JavaScript
   sourcemap: !isProduction,                      // Enable sourcemaps in development
