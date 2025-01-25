@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { JSDOM } from 'jsdom';
+
 
 @Injectable({
   providedIn: 'root', // Available application-wide
@@ -13,8 +13,8 @@ export class XmlParserService {
    */
   static parseXml(xmlString: string): Document {
     try {
-      const dom = new JSDOM(xmlString, { contentType: 'text/xml' });
-      const document = dom.window.document;
+      const domParser = new DOMParser();
+      const dom = domParser.parseFromString(xmlString, 'text/xml');
 
       // Check for parsing errors
       const parserError = document.querySelector('parsererror');

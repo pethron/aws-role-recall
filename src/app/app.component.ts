@@ -1,16 +1,24 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  standalone: true, 
-  imports: [RouterOutlet],
+  standalone: true,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'aws-role-recall';
+
+  parsedRoles: string[] = [];
+  errorMessage: string | null = null;
+
+  ngOnInit(): void {
+    chrome.storage.local.get(['samlResponse'], (result) => {
+      
+   })
+  }
+  
 
   onClick() {
     console.log('Button was clicked!');

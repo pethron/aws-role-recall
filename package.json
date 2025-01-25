@@ -1,18 +1,23 @@
 {
   "name": "aws-role-recall",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "build:extension": "tsc --project tsconfig.app.json --outDir out-tsc",
-    "build:angular": "ng build --output-hashing=none",
-    "build:all": "npm run build:extension && npm run build:angular",
-    "watch:extension": "tsc --project tsconfig.app.json --outDir out-tsc --watch",
+    "watch:background": "node esbuild.config.mjs --watch",
     "watch:angular": "ng build --watch --output-hashing=none",
-    "watch:all": "npm-run-all --parallel watch:extension watch:angular"
+    "watch:all": "npm run watch:background && npm run watch:angular",
+    "test": "ng test",
+    "build:background": "node esbuild.config.mjs",
+    "build:angular": "ng build --output-hashing=none",
+    "build:all": "npm run build:background && npm run build:angular",
+
+    "build:t:background": "tsc --project tsconfig.background.json --outDir out-tsc",
+    "watch:t:background": "tsc --project tsconfig.background.json --outDir out-tsc",
+    "watch:extension": "tsc --project tsconfig.app.json --outDir out-tsc --watch"
   },
   "private": true,
   "dependencies": {
@@ -24,6 +29,7 @@
     "@angular/platform-browser": "^19.1.0",
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
+    "jsdom": "^26.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "webextension-polyfill": "^0.12.0",
@@ -36,6 +42,8 @@
     "@types/chrome": "^0.0.299",
     "@types/jasmine": "~5.1.0",
     "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.10",
+    "esbuild": "^0.24.2",
     "jasmine-core": "~5.5.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

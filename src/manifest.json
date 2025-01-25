@@ -10,7 +10,8 @@
       "https://signin.amazonaws-us-gov.com/saml"
     ],
     "background": {
-      "service_worker": "background.js"
+      "service_worker": "background.js",
+      "type": "module"
     },
     "action": {
       "default_popup": "index.html",
@@ -20,8 +21,6 @@
       "48": "assets/icon48.png",
       "128": "assets/icon128.png"
     },
-    "content_scripts": [
-
-    ]
+    "content_scripts": []
 }
   
