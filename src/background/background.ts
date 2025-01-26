@@ -1,3 +1,5 @@
+import { extractIssuer } from "./utils/saml-utils";
+
 chrome.webRequest.onBeforeRequest.addListener(
     (details) => {
         if (details.method === "POST" && details.url.includes("https://signin.aws.amazon.com/saml")) {
@@ -6,9 +8,21 @@ chrome.webRequest.onBeforeRequest.addListener(
                     if (details.requestBody.formData && details.requestBody.formData["SAMLResponse"]) {
                         const samlResponseBase64 = details.requestBody.formData["SAMLResponse"][0];
                         const samlResponseDecoded = atob(samlResponseBase64);
-                        parseXML(samlResponseDecoded);
-                        chrome.storage.local.set({ samlResponse: samlResponseDecoded });
-                    }
+                        const id = extractIssuer(samlResponseDecoded);
+
+                        chrome.storage.local.get("providers", function (result) {
+                            let providers = result['providers'] || [];
+                            const existingIndex = providers.findIndex((provider) => provider.id === id);
+                    
+                            if (existingIndex !== -1) {
+                                providers[existingIndex] = { id: id, samlResponse: samlResponseDecoded };
+                            } else {
+                                providers.push({ id: id, samlResponse: samlResponseDecoded });
+                            }
+                    
+                            chrome.storage.local.set({ providers: providers });
+                        });
+                    } 
                     else if (details.requestBody.raw) {
                         const rawData = new TextDecoder("utf-8").decode(details.requestBody.raw[0].bytes);
                         const n = rawData.lastIndexOf("SAMLResponse=");

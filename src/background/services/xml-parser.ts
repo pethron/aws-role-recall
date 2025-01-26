@@ -1,9 +1,21 @@
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 
 export function parseXML(xmlString: string): void {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+    //const xmlDoc = new JSDOM(xmlString);
+    //console.log(xmlDoc.window.document.querySelector("p").textContent); // "Hello world"
 
-    const samlAttributes: { [key: string]: string } = {};
+    const dom = new JSDOM(xmlString, { contentType: "text/xml" });
+    const document = dom.window.document;
+
+    // Use querySelector to find the saml2:Issuer element
+    const issuerNode = document.querySelector("saml2\\:Issuer");
+
+    if (issuerNode) {
+        console.log(issuerNode.textContent?.trim() || null);
+    }
+    
+    /* const samlAttributes: { [key: string]: string } = {};
     xmlDoc.querySelectorAll("saml2:Attribute").forEach((attribute) => {
         const key = attribute.getAttribute("Name") || "";
         const value = attribute.querySelector("saml2:AttributeValue")?.textContent || "";
@@ -32,6 +44,6 @@ export function parseXML(xmlString: string): void {
           }
         }
       }
-    }
+    } */
 }
 

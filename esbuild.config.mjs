@@ -8,7 +8,7 @@ build({
   bundle: true,                                  // Bundle dependencies
   outfile: 'out-tsc/background/background.js',    // Output file
   platform: 'browser',                           // Target browser runtime
-  target: 'es2022',                              // Use modern JavaScript
+  target: 'es2020',                              // Use modern JavaScript
   sourcemap: !isProduction,                      // Enable sourcemaps in development
   minify: isProduction,                          // Minify in production
   external: [],                                  // Exclude libraries (if any)
