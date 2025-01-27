@@ -13,3 +13,19 @@ export function extractIssuer(samlResponse: string): string | null {
   
     return null;
   }
+
+export function extractAccountInfo(responseText: string) {
+    // Use a regular expression to match the content inside the div
+    const regex = /<div class="saml-account-name">Account:\s*([^\(]+)\((\d+)\)<\/div>/g;
+    const matches = [...responseText.matchAll(regex)];
+
+    const accounts = matches.map((match) => {
+      return {
+          name: match[1].trim(), // Extract the account name
+          number: match[2], // Extract the account number
+      };
+  });
+
+  console.log("Extracted Accounts:", accounts);
+  return accounts;
+}
