@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-
 @Injectable({
   providedIn: 'root', // Available application-wide
 })
@@ -14,7 +13,7 @@ export class XmlParserService {
   static parseXml(xmlString: string): Document {
     try {
       const domParser = new DOMParser();
-      const dom = domParser.parseFromString(xmlString, 'text/xml');
+      const dom = domParser.parseFromString(xmlString, 'application/xml');
 
       // Check for parsing errors
       const parserError = document.querySelector('parsererror');
@@ -22,7 +21,7 @@ export class XmlParserService {
         throw new Error(`Error parsing XML: ${parserError.textContent}`);
       }
 
-      return document;
+      return dom;
     } catch (error) {
       console.error('Failed to parse XML:', error);
       throw error;
@@ -35,34 +34,31 @@ export class XmlParserService {
    * @param tagName - The tag name to extract.
    * @returns An array of text content for the specified tag.
    */
-  extractValues(xmlDoc: Document): any {
-    const issuer = xmlDoc.querySelector("saml2:Issuer")?.textContent;
-    const nameId = xmlDoc.querySelector("saml2:NameID")?.textContent;
-
-    console.log("issuer:", issuer);
-    console.log("nameId:", nameId);
-    
-    const samlAttributes: { [key: string]: string } = {};
-    xmlDoc.querySelectorAll("saml2:Attribute").forEach((attribute) => {
-        const key = attribute.getAttribute("Name") || "";
-        const value = attribute.querySelector("saml2:AttributeValue")?.textContent || "";
-        samlAttributes[key] = value;
-    });
-    console.log("samlAttributes:", samlAttributes)
-
+  static extractValues(xmlDoc: Document): any {
+    console.log(xmlDoc);
     const SAML_NAMESPACE = "urn:oasis:names:tc:SAML:2.0:assertion";
+    // Get Issuer
+    const issuerElement = xmlDoc.getElementsByTagNameNS(SAML_NAMESPACE, "Issuer")[0];
+    const issuer = issuerElement?.textContent;
+
+    // Get NameID
+    const nameIdElement = xmlDoc.getElementsByTagNameNS(SAML_NAMESPACE, "NameID")[0];
+    const nameId = nameIdElement?.textContent;
+
+    console.log("Issuer:", issuer);
+    console.log("NameID:", nameId);
+    
     const attributes = xmlDoc.getElementsByTagNameNS(SAML_NAMESPACE, "Attribute");
     console.log("attributes:", attributes);
   
     let roles = [];
+    let roleSessionName = "";
+    let sessionDuration;
     for (let i = 0; i < attributes.length; i++) {
       const name = attributes[i].getAttribute("Name");
-      if (name === "https://aws.amazon.com/SAML/Attributes/Role") {
-        console.log("Found Attribute:", name);
-  
+      if (name === "https://aws.amazon.com/SAML/Attributes/Role") {  
         // Extract all <saml2:AttributeValue> elements within this <Attribute>
         const attributeValues = attributes[i].getElementsByTagNameNS(SAML_NAMESPACE, "AttributeValue");
-  
         for (let j = 0; j < attributeValues.length; j++) {
           const textContent = attributeValues[j].textContent?.trim();
           if (textContent) {
@@ -70,6 +66,13 @@ export class XmlParserService {
             roles.push({ roleArn, providerArn });
           }
         }
+      } else if (name === "https://aws.amazon.com/SAML/Attributes/RoleSessionName") {
+        roleSessionName = attributes[i].textContent?.trim() || "";
+        console.log("RoleSessionName:", roleSessionName);
+
+      } else if (name === "https://aws.amazon.com/SAML/Attributes/SessionDuration") {
+        sessionDuration = parseInt(attributes[i].textContent?.trim() || "2600");
+        console.log("SessionDuration:", sessionDuration);
       }
     }
 

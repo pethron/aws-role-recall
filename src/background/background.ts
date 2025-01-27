@@ -12,14 +12,13 @@ chrome.webRequest.onBeforeRequest.addListener(
 
                         chrome.storage.local.get("providers", function (result) {
                             let providers = result['providers'] || [];
-                            const existingIndex = providers.findIndex((provider) => provider.id === id);
+                            const existingIndex = providers.findIndex((provider: { id: string | null; }) => provider.id === id);
                     
                             if (existingIndex !== -1) {
                                 providers[existingIndex] = { id: id, samlResponse: samlResponseDecoded };
                             } else {
                                 providers.push({ id: id, samlResponse: samlResponseDecoded });
                             }
-                    
                             chrome.storage.local.set({ providers: providers });
                         });
                     } 

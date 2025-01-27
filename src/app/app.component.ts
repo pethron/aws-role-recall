@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { XmlParserService } from './services/xml-parser.service';
 
 @Component({
   selector: 'app-root',
@@ -14,14 +15,19 @@ export class AppComponent implements OnInit {
   errorMessage: string | null = null;
 
   ngOnInit(): void {
-    chrome.storage.local.get(['samlResponse'], (result) => {
-      
-   })
+    chrome.storage.local.get(['providers'], (result) => {
+      console.log(result.providers);
+      result.providers.forEach((provider: { id: string, samlResponse: string; }) => {
+        
+        const doc = XmlParserService.parseXml(provider.samlResponse);
+        const roles = XmlParserService.extractValues(doc);
+        console.log("roles", roles);
+       });
+    });
   }
   
-
   onClick() {
     console.log('Button was clicked!');
-    alert('Extension is working!');
+    alert('Extension iss working!');
   } 
 }
