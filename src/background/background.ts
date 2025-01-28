@@ -5,14 +5,12 @@ let requestHeaders: Record<string, string> = {};
 chrome.webRequest.onBeforeSendHeaders.addListener(
     (details) => {
         if (details.url.includes("https://signin.aws.amazon.com/saml") && details.method === "POST") {
-            // Store headers for this request
-            requestHeaders = {}; // Reset headers
+            requestHeaders = {}; 
             details.requestHeaders?.forEach((header) => {
                 if (header.value) {
                     requestHeaders[header.name] = header.value;
                 }
             });
-            console.log("Captured Headers:", requestHeaders);
         }
     },
     { urls: ["https://signin.aws.amazon.com/saml*"] },
@@ -21,19 +19,45 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 
 chrome.webRequest.onBeforeRequest.addListener(
     (details) => {
-        console.log(details.initiator, details.method, details.url);
         // Ignore requests made by the extension itself
         if (details.initiator?.startsWith("chrome-extension://")) {
             return;
         }
 
         if (details.method === "POST" && details.url.includes("https://signin.aws.amazon.com/saml")) {
+            console.log('DETAILS ONBEFORE:', details);
             if (details.requestBody) {
                 try {
                     if (details.requestBody.formData && details.requestBody.formData["SAMLResponse"]) {
                         const samlResponseBase64 = details.requestBody.formData["SAMLResponse"][0];
                         const samlResponseDecoded = atob(samlResponseBase64);
                         const id = extractIssuer(samlResponseDecoded);
+                        if (!id) {
+                            console.error("Issuer ID not found.");
+                            throw new Error("Issuer ID not found.");
+                            
+                        }
+
+                        chrome.storage.local.get("database", (data) => {
+                            const database = data.database || {};
+                            // TODO: Update logic for:
+                            //      1) roles if they already exist and preserve their IDs and names
+                            //      2) samlResponse if it already exists and is between the previous validity time
+
+                            database[id] = {
+                                ...database[id],
+                                lastRequest: {
+                                    id: details.requestId,
+                                    samlResponseBase64: samlResponseBase64,
+                                    samlResponseDecoded: samlResponseDecoded
+                                }
+                            };
+                        
+                            // Persist the updated database
+                            chrome.storage.local.set({ database }, () => {
+                                console.log(`Stored SAML response for ID ${id}`);
+                            });
+                        });
 
                         chrome.storage.local.get("providers", function (result) {
                             let providers = result['providers'] || [];
@@ -48,7 +72,7 @@ chrome.webRequest.onBeforeRequest.addListener(
                         });
                     } 
                     else if (details.requestBody.raw) {
-                        const rawData = new TextDecoder("utf-8").decode(details.requestBody.raw[0].bytes);
+                        /* const rawData = new TextDecoder("utf-8").decode(details.requestBody.raw[0].bytes);
                         const n = rawData.lastIndexOf("SAMLResponse=");
                         const n2 = rawData.lastIndexOf("&RelayState=");
                         if (n !== -1) {
@@ -60,7 +84,7 @@ chrome.webRequest.onBeforeRequest.addListener(
                             chrome.storage.local.set({ samlResponse: samlResponseDecoded });
                         } else {
                             console.warn("SAMLResponse non found in raw data.");
-                        }
+                        } */
                     } else {
                         console.warn("SAMLResponse not found.");
                     }
@@ -84,7 +108,62 @@ chrome.webRequest.onCompleted.addListener(
             return;
         }
 
+
+
         if (details.method === "POST" && details.url.includes("https://signin.aws.amazon.com/saml")) {
+            chrome.storage.local.get("database", async (data) => {
+                const database = data.database || {};
+
+                console.log('DETAILS ONCOMPLETED:', details);
+
+                // Iterate through the database to find the corresponding ID
+                for (const id in database) {
+                    if (database[id].samlResponse.base64) {
+                        try {
+                            console.log("DATABASE");
+                            const formData = new URLSearchParams();
+                            formData.append("SAMLResponse", database[id].samlResponse.base64); // Re-encode SAML response
+
+                            const response = await fetch(details.url, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded",
+                                },
+                                body: formData.toString(),
+                            });
+
+                            if (response.ok) {
+                                const responseText = await response.text();
+                                const info = extractAccountInfo(responseText);
+                                console.log(info);
+                                
+                                database[id] = {
+                                    ...database[id],
+                                    ...info,
+                                };
+    
+                                // Persist the updated database
+                                chrome.storage.local.set({ database }, () => {
+                                    console.log(`Updated entry for ID ${id} with HTML body`);
+                                });
+                                // chrome.storage.local.set({ responseId: id, responseBody: responseText });
+                            } else {
+                                console.error("Failed to fetch response:", response.status, response.statusText);
+                            }
+
+   /*                          const htmlBody = await response.text();
+                            const parsedInfo = extractAccountInfo(htmlBody); // Extract additional info
+ */
+                            // Update the database entry
+                            
+                        } catch (err) {
+                            console.error(`Failed to fetch HTML body for ID ${id}:`, err);
+                        }
+                    }
+                }
+            });
+
+
             chrome.storage.local.get("providers", async (result) => {
                 const samlResponseDecoded = result.providers?.[0]?.samlResponse;
 
@@ -96,9 +175,7 @@ chrome.webRequest.onCompleted.addListener(
                 try {
                     // Reconstruct the POST request with the original SAMLResponse
                     const formData = new URLSearchParams();
-                    formData.append("SAMLResponse", btoa(samlResponseDecoded)); // Encode back to Base64 if needed
-
-                    console.log("Reconstructed Form Data:", formData.toString());
+                    formData.append("SAMLResponse", btoa(samlResponseDecoded));
 
                     // Perform the fetch with captured headers
                     const response = await fetch(details.url, {
@@ -115,11 +192,6 @@ chrome.webRequest.onCompleted.addListener(
 
                     if (response.ok) {
                         const responseText = await response.text();
-                        // console.log("Fetched Response Body:", responseText);
-
-                        // Parse and store the response if needed
-                        // const id = extractIssuer(responseText);
-
                         const info = extractAccountInfo(responseText);
                         console.log(info);
                         
@@ -135,54 +207,3 @@ chrome.webRequest.onCompleted.addListener(
     },
     { urls: ["https://signin.aws.amazon.com/saml*"] }
 );
-
-/* chrome.webRequest.onCompleted.addListener(
-    async (details) => {
-         if (details.method === "POST" && details.url.includes("https://signin.aws.amazon.com/saml")) {
-            chrome.storage.local.get("providers", async (result) => {
-                
-                const samlResponseDecoded = result.providers[0].samlResponse;
-                
-                if (!samlResponseDecoded) {
-                    console.error("No SAML response found in storage.");
-                    return;
-                }
-
-                try {
-                    // Reconstruct the POST request with the original SAMLResponse
-                    const formData = new URLSearchParams();
-                    formData.append("SAMLResponse", btoa(samlResponseDecoded)); // Encode back to Base64 if needed
-                
-                    console.log(formData.toString());
-
-                    // Perform the fetch
-                    const response = await fetch(details.url, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                            "X-Bypass-Service-Worker": "true",
-                        },
-                        body: formData.toString(),
-                    });
-
-                    console.log("Fetched Response:", response);
-
-                    if (response.ok) {
-                        const responseText = await response.text();
-                        console.log("Fetched Response Body:", responseText);
-
-                        // Parse and store the response if needed
-                        const id = extractIssuer(responseText);
-                        chrome.storage.local.set({ responseId: id, responseBody: responseText });
-                    } else {
-                        console.error("Failed to fetch response:", response.status, response.statusText);
-                    }
-                } catch (err) {
-                    console.error("Error fetching response:", err);
-                }
-            });
-        }
-    },
-    { urls: ["https://signin.aws.amazon.com/saml*"], },
-    ["responseHeaders"]
-); */
