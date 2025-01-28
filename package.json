@@ -7,16 +7,13 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "watch:background": "node esbuild.config.mjs --watch",
+    "watch:background": ".\\node_modules\\.bin\\esbuild src/background/background.ts --bundle --outfile=out-tsc/background/background.js --platform=browser --target=es2020 --sourcemap --watch",
     "watch:angular": "ng build --watch --output-hashing=none",
     "watch:all": "npm run watch:background && npm run watch:angular",
     "test": "ng test",
     "build:background": "node esbuild.config.mjs",
     "build:angular": "ng build --output-hashing=none",
-    "build:all": "npm run build:background && npm run build:angular",
-    "build:t:background": "tsc --project tsconfig.background.json --outDir out-tsc",
-    "watch:t:background": "tsc --project tsconfig.background.json --outDir out-tsc",
-    "watch:extension": "tsc --project tsconfig.app.json --outDir out-tsc --watch"
+    "build:all": "npm run build:background && npm run build:angular"
   },
   "private": true,
   "dependencies": {
