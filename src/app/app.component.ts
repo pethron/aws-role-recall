@@ -1,21 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { XmlParserService } from './services/xml-parser.service';
+import { RolesListComponent } from "./components/roles-list/roles-list.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  imports: [RolesListComponent]
 })
 
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'aws-role-recall';
 
   parsedRoles: string[] = [];
   errorMessage: string | null = null;
 
-  ngOnInit(): void {
-    chrome.storage.local.get(['providers'], (result) => {
+/*   ngOnInit(): void {
+    /* chrome.storage.local.get(['providers'], (result) => {
       console.log(result.providers);
       result.providers.forEach((provider: { id: string, samlResponse: string; }) => {
         
@@ -23,11 +24,11 @@ export class AppComponent implements OnInit {
         const roles = XmlParserService.extractValues(doc);
         console.log("roles", roles);
        });
-    });
-  }
+    }); */
   
-  onClick() {
+  
+/*   onClick() {
     console.log('Button was clicked!');
     alert('Extension iss working!');
-  } 
+  }  */
 }

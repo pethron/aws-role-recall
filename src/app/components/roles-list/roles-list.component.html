@@ -1,0 +1,13 @@
+<div *ngIf="getKeys().length === 0">No roles available.</div>
+
+<div *ngFor="let providerId of getKeys()" class="account-card">
+  <h3>Provider: {{ providerId }}</h3>
+
+  <div *ngFor="let role of getRoles(providerId)" class="role-card">
+    <p><strong>Account:</strong> {{ role.accountName || "Unknown" }} ({{ role.accountNumber }})</p>
+    <p><strong>Role Name:</strong> {{ role.name }}</p>
+    <p><strong>Role ARN:</strong> {{ role.roleArn }}</p>
+    <p><strong>Provider ARN:</strong> {{ role.providerArn }}</p>
+  </div>
+</div>
+
