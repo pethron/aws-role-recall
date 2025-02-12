@@ -25,7 +25,6 @@ chrome.webRequest.onBeforeRequest.addListener(
         }
 
         if (details.method === "POST" && details.url.includes("https://signin.aws.amazon.com/saml")) {
-            console.log('DETAILS ONBEFORE:', details);
             if (details.requestBody) {
                 try {
                     if (details.requestBody.formData && details.requestBody.formData["SAMLResponse"]) {
@@ -110,7 +109,6 @@ chrome.webRequest.onCompleted.addListener(
         if (details.method === "POST" && details.url.includes("https://signin.aws.amazon.com/saml")) {
             chrome.storage.local.get("database", async (data) => {
                 const database = data.database || {};
-                console.log("DATABASE");
 
                 // Iterate through the database to find the corresponding ID
                 for (const id in database) {

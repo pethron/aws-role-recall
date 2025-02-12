@@ -50,6 +50,5 @@ export function extractAccountFromHTML(responseText: string) {
     };
   });
 
-  console.log("Extracted Accounts:", accounts);
   return accounts;
 }
