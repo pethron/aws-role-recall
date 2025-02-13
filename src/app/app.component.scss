@@ -1,13 +1,36 @@
+:root {
+  --font-primary: 'Inter', sans-serif;
+  --font-monospace: 'Fira Code', monospace;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  color: #222;
+}
+
+code, pre {
+  font-family: var(--font-monospace);
+  background-color: #eef;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+
 /* You can add global styles to this file, and also import other style files */
 body {
+    font-family: var(--font-primary);
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333; // Adjust for dark/light themes
+    background-color: #f9f9f9; // Soft background for readability
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
-    min-width: 300px;
-    max-width: 500px;
-    min-height: 100px;
-    max-height: 300px;
+    min-width: 500px;
+    max-width: 1000px;
+    min-height: 300px;
+    max-height: 600px;
     overflow-y: auto; /* Ensure vertical scrolling */
     overflow-x: hidden; /* Prevent horizontal scrolling */
 }

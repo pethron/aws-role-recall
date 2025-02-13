@@ -4,9 +4,9 @@ import { RolesListComponent } from "./components/roles-list/roles-list.component
 @Component({
   selector: 'app-root',
   standalone: true,
+  imports: [RolesListComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  imports: [RolesListComponent]
 })
 
 export class AppComponent {
